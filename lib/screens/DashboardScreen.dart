@@ -5,6 +5,7 @@ import 'package:my_business/models/project.dart';
 import 'package:my_business/screens/AddProjectScreen.dart';
 import 'package:my_business/screens/ProjectDetailScreen.dart';
 import 'package:intl/intl.dart';
+import 'package:home_widget/home_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,6 +30,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
 
     final projects = await DatabaseHelper.instance.getAllProjects();
+
+    // Update home screen widget data
+    await HomeWidget.saveWidgetData<String>('project_count', projects.length.toString());
+
+    // Calculate totals (simplified - in real app, you'd sum all incomes/expenses)
+    double totalIncome = 0;
+    double totalExpenses = 0;
+
+    for (var project in projects) {
+      final summary = await DatabaseHelper.instance.getProjectSummary(project.id!);
+      totalIncome += (summary['totalIncome'] as num?)?.toDouble() ?? 0;
+      totalExpenses += (summary['totalExpense'] as num?)?.toDouble() ?? 0;
+    }
+
+    await HomeWidget.saveWidgetData<String>('total_income', '\$${totalIncome.toStringAsFixed(2)}');
+    await HomeWidget.saveWidgetData<String>('total_expenses', '\$${totalExpenses.toStringAsFixed(2)}');
+
+    // Update the widget
+    await HomeWidget.updateWidget(
+      name: 'HomeWidgetExampleProvider',
+      androidName: 'HomeWidgetExampleProvider',
+    );
+
     setState(() {
       _projects = projects;
       _isLoading = false;
