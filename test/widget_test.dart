@@ -13,7 +13,7 @@ import 'package:my_business/main.dart';
 void main() {
   testWidgets('App initialization test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MADWordGameApp());
+    await tester.pumpWidget(const MyApp());
 
     // Verify that the app initializes
     expect(find.byType(MaterialApp), findsOneWidget);
